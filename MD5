@@ -1,0 +1,9 @@
+9755019f019a9309b7f397d98db0de3a *DESCRIPTION
+05dc35d5aae249917b5eb9f5a6d10009 *NAMESPACE
+681347bdc39f8fedd3dcfe6950cf5292 *R/LIRI.R
+842a4acdb5da22ad1dd3f6c5322963cc *R/ggrisk.R
+a7faf6eef49283dfbd3e4809969f3771 *R/two_scatter.R
+cac247cb34c289ef94d40814fae04f00 *data/LIRI.rda
+ef7adbff354ad437c44bba5c6020b97f *man/LIRI.Rd
+982a1dfbacf0cdc7c7505a6abafbd0a5 *man/ggrisk.Rd
+78cb0afc5428ab0fc8da835ec6356fee *man/two_scatter.Rd
