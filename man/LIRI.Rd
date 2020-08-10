@@ -4,7 +4,9 @@
 \name{LIRI}
 \alias{LIRI}
 \title{ICGC Liver Data from Japan}
-\format{An object of class \code{data.frame} with 232 rows and 6 columns.}
+\format{
+An object of class \code{data.frame} with 232 rows and 6 columns.
+}
 \usage{
 data(LIRI)
 }

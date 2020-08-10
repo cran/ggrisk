@@ -1,9 +1,10 @@
 Package: ggrisk
 Title: Risk Score Plot for Cox Regression
-Version: 1.0
+Version: 1.2
 Authors@R: 
     c(
-    person("Jing","Zhang",role = c("aut", "cre"),email = "zj391120@163.com"),
+    person("Jing","Zhang",role = c("aut", "cre"),
+            email = "zj391120@163.com"),
     person("Zhi", "Jin", role="aut")
     )
 Description: The risk plot may be one of the most commonly used figures in 
@@ -17,16 +18,16 @@ Description: The risk plot may be one of the most commonly used figures in
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Depends: R (>= 2.10)
 Imports: ggplot2, survival, egg, do, set, cutoff, fastStat, grid, rms,
         nomogramFormula
 URL: https://github.com/yikeshu0611/ggrisk
 BugReports: https://github.com/yikeshu0611/ggrisk/issues
 NeedsCompilation: no
-Packaged: 2020-01-28 07:27:05 UTC; asus
+Packaged: 2020-08-07 16:00:56 UTC; asus
 Author: Jing Zhang [aut, cre],
   Zhi Jin [aut]
 Maintainer: Jing Zhang <zj391120@163.com>
 Repository: CRAN
-Date/Publication: 2020-02-09 12:10:05 UTC
+Date/Publication: 2020-08-10 10:40:06 UTC

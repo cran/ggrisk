@@ -4,26 +4,48 @@
 \alias{two_scatter}
 \title{Two Scatter Plot Plot for Cox Regression}
 \usage{
-two_scatter(data, time, event, code.0 = "Alive", code.1 = "Dead",
-  code.highrisk = "High", code.lowrisk = "Low", cutoff.show = TRUE,
-  cutoff.value = "median", cutoff.x, cutoff.y, cutoff.label,
-  title.A.ylab = "Risk Score", title.B.ylab = "Survival Time",
-  title.xlab = "Rank", title.A.legend = "Risk Group",
-  title.B.legend = "Status", size.AB = 1.5, size.ylab.title = 14,
-  size.xlab.title = 14, size.Atext = 11, size.Btext = 11,
-  size.xtext = 11, size.xyticks = 0.5, size.xyline = 0.5,
-  size.points = 2, size.dashline = 1, size.cutoff = 5,
-  size.legendtitle = 13, size.legendtext = 12, color.A = c(low =
-  "blue", high = "red"), color.B = c(code.0 = "blue", code.1 = "red"),
-  vjust.A.ylab = 1, vjust.B.ylab = 2, family = "sans",
-  expand.x = 3)
+two_scatter(
+  fit,
+  new.data = NULL,
+  code.0 = "Alive",
+  code.1 = "Dead",
+  code.highrisk = "High",
+  code.lowrisk = "Low",
+  cutoff.show = TRUE,
+  cutoff.value = "median",
+  cutoff.x,
+  cutoff.y,
+  cutoff.label,
+  title.A.ylab = "Risk Score",
+  title.B.ylab = "Survival Time",
+  title.xlab = "Rank",
+  title.A.legend = "Risk Group",
+  title.B.legend = "Status",
+  size.AB = 1.5,
+  size.ylab.title = 14,
+  size.xlab.title = 14,
+  size.Atext = 11,
+  size.Btext = 11,
+  size.xtext = 11,
+  size.xyticks = 0.5,
+  size.xyline = 0.5,
+  size.points = 2,
+  size.dashline = 1,
+  size.cutoff = 5,
+  size.legendtitle = 13,
+  size.legendtext = 12,
+  color.A = c(low = "blue", high = "red"),
+  color.B = c(code.0 = "blue", code.1 = "red"),
+  vjust.A.ylab = 1,
+  vjust.B.ylab = 2,
+  family = "sans",
+  expand.x = 3
+)
 }
 \arguments{
-\item{data}{dataframe data}
+\item{fit}{cox regression results of coxph() from 'survival' package or cph() from 'rms' package}
 
-\item{time}{numeric variable. Name for following time}
-
-\item{event}{must be numeric variable. Name for event, which must be coded as 0 and 1}
+\item{new.data}{new data for validation}
 
 \item{code.0}{string. Code for event 0. Default is 'Alive'}
 
@@ -98,7 +120,9 @@ A riskscore picture
 Two Scatter Plot Plot for Cox Regression
 }
 \examples{
-two_scatter(data=LIRI,time='time',event='status',
+library(rms)
+fit <- cph(Surv(time,status)~ANLN+CENPA+GPR182+BCO2,LIRI)
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5)
@@ -106,32 +130,32 @@ two_scatter(data=LIRI,time='time',event='status',
 #more detailed example
 library(ggrisk)
 #plot
-two_scatter(data=LIRI,time='time',event='status')
+two_scatter(fit)
 #regulate cutoff
 ##hidden cutoff
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.show = FALSE)
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median')
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'roc')
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'cutoff')
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = -1)
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5)
 #code for 0 and 1
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
             code.0 = 'Still Alive',
             code.1 = 'Dead')
 #code for high and low risk group
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
@@ -140,7 +164,7 @@ two_scatter(data=LIRI,time='time',event='status',
             code.highrisk = 'High Group',
             code.lowrisk = 'Low Group')
 #title for legend, x and y lab
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
@@ -154,7 +178,7 @@ two_scatter(data=LIRI,time='time',event='status',
             title.B.ylab = 'Survival Time(year)',
             title.xlab = 'This is rank')
 #vertical just for y-axis lab
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
@@ -170,7 +194,7 @@ two_scatter(data=LIRI,time='time',event='status',
             vjust.A.ylab = 1,
             vjust.B.ylab = 3)
 #size
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
@@ -199,7 +223,7 @@ two_scatter(data=LIRI,time='time',event='status',
             size.legendtitle = 14,
             size.legendtext = 13)
 #color
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,
@@ -230,7 +254,7 @@ two_scatter(data=LIRI,time='time',event='status',
             color.A = c(low='green',high='red'),
             color.B = c(code.0='green',code.1='red'))
 #famli and expand
-two_scatter(data=LIRI,time='time',event='status',
+two_scatter(fit,
             cutoff.value = 'median',
             cutoff.x = 142,
             cutoff.y = -0.5,

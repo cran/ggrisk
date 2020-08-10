@@ -1,8 +1,7 @@
 #' @title Risk Score Plot for Cox Regression
-#' @param data dataframe data
-#' @param time numeric variable. Name for following time
-#' @param event must be numeric variable. Name for event, which must be coded as 0 and 1
+#' @param fit cox regression results of coxph() from 'survival' package or cph() from 'rms' package
 #' @param heatmap.genes (optional) numeric variables. Name for genes
+#' @param new.data new data for validation
 #' @param code.0 string. Code for event 0. Default is 'Alive'
 #' @param code.1 string. Code for event 1. Default is 'Dead'
 #' @param code.highrisk string. Code for highrisk in risk score. Default is 'High'
@@ -41,46 +40,50 @@
 #' @importFrom ggplot2 ylab geom_tile unit scale_fill_gradient2 scale_x_continuous geom_raster theme_classic annotate
 #' @importFrom ggplot2 scale_color_manual element_line scale_fill_manual ggplot scale_fill_manual
 #' @importFrom stats as.formula median sd cor
+#' @importFrom stats predict update
+#' @importFrom rms cph
 #' @return A risk score picture
 #' @export
 #'
 #' @examples
-#' ggrisk(data=LIRI,time='time',event='status',
+#' library(rms)
+#' library(ggrisk)
+#' fit <- cph(Surv(time,status)~ANLN+CENPA+GPR182+BCO2,LIRI)
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8)
 #'
 #' \donttest{
 #' #more detailed example
-#' library(ggrisk)
 #' #plot
-#' ggrisk(data=LIRI,time='time',event='status')
+#' ggrisk(fit)
 #'
 #' #heatmap.genes
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        heatmap.genes=c('GPR182','CENPA','BCO2'))
 #'
 #' #cutoff
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median') #default
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='roc')
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='cutoff')
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value=-1)
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8)
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
 #'        cutoff.label='This is cutoff')
 #'
 #' #code for 0 and 1
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -88,7 +91,7 @@
 #'        code.1 = 'Already Dead')
 #'
 #' #code for high and low risk group
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -97,7 +100,7 @@
 #'        code.highrisk = 'High Risk',
 #'        code.lowrisk = 'Low Risk')
 #' #title
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -111,7 +114,7 @@
 #'        title.B.legend='Status',
 #'        title.C.legend='Expression')
 #' #size
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -137,7 +140,7 @@
 #'        size.legendtitle=13,
 #'        size.legendtext=12)
 #' #color
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -167,7 +170,7 @@
 #'        color.C=c(low='blue',median='white',high='red'))
 #'
 #' #vjust
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -199,7 +202,7 @@
 #'        vjust.B.ylab=2)
 #'
 #' #family, expand, relative height
-#' ggrisk(data=LIRI,time='time',event='status',
+#' ggrisk(fit,
 #'        cutoff.value='median',
 #'        cutoff.x = 145,
 #'        cutoff.y = -0.8,
@@ -233,16 +236,16 @@
 #'        expand.x=3,
 #'        relative_heights=c(0.1,0.1,0.01,0.15))
 #' }
-ggrisk <- function(data,time,event,heatmap.genes,
+ggrisk <- function(fit,heatmap.genes=NULL,new.data=NULL,
                    code.0='Alive',
                    code.1='Dead',
                    code.highrisk='High',
                    code.lowrisk='Low',
                    cutoff.show=TRUE,
                    cutoff.value='median',
-                   cutoff.x,
-                   cutoff.y,
-                   cutoff.label,
+                   cutoff.x=NULL,
+                   cutoff.y=NULL,
+                   cutoff.label=NULL,
                    title.A.ylab='Risk Score',
                    title.B.ylab='Survival Time',
                    title.A.legend='Risk Group',
@@ -268,12 +271,14 @@ ggrisk <- function(data,time,event,heatmap.genes,
                    family='sans',
                    expand.x=3,
                    relative_heights=c(0.1,0.1,0.01,0.15)) {
-    #  1.regression
-    x = do::inner_Add_Symbol(set::not(colnames(data), c(time, event)))
-    formu = paste0('survival::Surv(', time, ',', event, ')~', x)
-    f = survival::coxph(formula = as.formula(formu), data = data)
+    #  0. to cph
+    fit=to.cph(fit)
+    #  1.data
+    if (is.null(new.data)) data=model.data(fit) else data=new.data
+    event=model.y(fit)[2]
+    time=model.y(fit)[1]
     #  2.risk point nomgram.points and lp
-    riskscore = f$linear.predictors
+    riskscore = predict(fit,type = 'lp',newdata = data)
     #  3.cbind and rank
     data2 = cbind(data, riskscore)
     data3 = data2[order(data2$riskscore), ]
@@ -304,10 +309,10 @@ ggrisk <- function(data,time,event,heatmap.genes,
         stop('cutoff must between ',min(riskscore),' and ',max(riskscore))
     }
     # 5.risk for low and high
-    reg_cph=suppressWarnings(rms::cph(formula = as.formula(formu), data = data,surv=TRUE))
-    df2=nomogramFormula::prob_cal(reg = reg_cph,times = median(data3[,time],na.rm = TRUE))
-    #plot(x=df2$linear.predictors,df2[,2])
-    correlaiton=cor(df2[,1],df2[,2],method = 'spearman')
+    times=median(data3[,time])
+    prob=rms::Survival(fit)(times = times,lp = riskscore)
+    #plot(x=prob,riskscore)
+    correlaiton=cor(prob,riskscore,method = 'spearman')
     if (correlaiton<0) {
         #correlaiton <0, meaning that high-score is shorter life, high risk
         `Risk Group` = ifelse(data3$riskscore > cutoff.point,code.highrisk,code.lowrisk)
@@ -368,9 +373,9 @@ ggrisk <- function(data,time,event,heatmap.genes,
         scale_x_continuous(expand = c(0,expand.x))
     fA
     if (cutoff.show){
-        if (missing(cutoff.label)) cutoff.label=paste0('cutoff: ',round(cutoff.point,2))
-        if (missing(cutoff.x)) cutoff.x=cut.position+3
-        if (missing(cutoff.y)) cutoff.y=cutoff.point
+        if (is.null(cutoff.label)) cutoff.label=paste0('cutoff: ',round(cutoff.point,2))
+        if (is.null(cutoff.x)) cutoff.x=cut.position+3
+        if (is.null(cutoff.y)) cutoff.y=cutoff.point
         fA=fA+ annotate("text",
                     x=cutoff.x,
                     y=cutoff.y,
@@ -426,7 +431,7 @@ ggrisk <- function(data,time,event,heatmap.genes,
         x = 1:nrow(data4),
         y = 1)
         ) +
-        geom_tile(aes(fill = data4$`Risk Group`))+
+        geom_tile(aes(fill = `Risk Group`))+
         scale_fill_manual(name=title.A.legend,values = color.A)+
         theme(
             panel.grid = element_blank(),
@@ -442,7 +447,7 @@ ggrisk <- function(data,time,event,heatmap.genes,
         scale_x_continuous(expand = c(0,expand.x))
     middle
     #fC
-    if (missing(heatmap.genes))  heatmap.genes=set::not(colnames(data4),
+    if (is.null(heatmap.genes))  heatmap.genes=set::not(colnames(data4),
                                                         c(time, event,
                                                           'Risk Group',
                                                           'riskscore'))

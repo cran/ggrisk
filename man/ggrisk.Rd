@@ -4,29 +4,52 @@
 \alias{ggrisk}
 \title{Risk Score Plot for Cox Regression}
 \usage{
-ggrisk(data, time, event, heatmap.genes, code.0 = "Alive",
-  code.1 = "Dead", code.highrisk = "High", code.lowrisk = "Low",
-  cutoff.show = TRUE, cutoff.value = "median", cutoff.x, cutoff.y,
-  cutoff.label, title.A.ylab = "Risk Score",
-  title.B.ylab = "Survival Time", title.A.legend = "Risk Group",
-  title.B.legend = "Status", title.C.legend = "Expression",
-  size.ABC = 1.5, size.ylab.title = 14, size.Atext = 11,
-  size.Btext = 11, size.Ctext = 11, size.yticks = 0.5,
-  size.yline = 0.5, size.points = 2, size.dashline = 1,
-  size.cutoff = 5, size.legendtitle = 13, size.legendtext = 12,
-  color.A = c(low = "blue", high = "red"), color.B = c(code.0 = "blue",
-  code.1 = "red"), color.C = c(low = "blue", median = "white", high =
-  "red"), vjust.A.ylab = 1, vjust.B.ylab = 2, family = "sans",
-  expand.x = 3, relative_heights = c(0.1, 0.1, 0.01, 0.15))
+ggrisk(
+  fit,
+  heatmap.genes = NULL,
+  new.data = NULL,
+  code.0 = "Alive",
+  code.1 = "Dead",
+  code.highrisk = "High",
+  code.lowrisk = "Low",
+  cutoff.show = TRUE,
+  cutoff.value = "median",
+  cutoff.x = NULL,
+  cutoff.y = NULL,
+  cutoff.label = NULL,
+  title.A.ylab = "Risk Score",
+  title.B.ylab = "Survival Time",
+  title.A.legend = "Risk Group",
+  title.B.legend = "Status",
+  title.C.legend = "Expression",
+  size.ABC = 1.5,
+  size.ylab.title = 14,
+  size.Atext = 11,
+  size.Btext = 11,
+  size.Ctext = 11,
+  size.yticks = 0.5,
+  size.yline = 0.5,
+  size.points = 2,
+  size.dashline = 1,
+  size.cutoff = 5,
+  size.legendtitle = 13,
+  size.legendtext = 12,
+  color.A = c(low = "blue", high = "red"),
+  color.B = c(code.0 = "blue", code.1 = "red"),
+  color.C = c(low = "blue", median = "white", high = "red"),
+  vjust.A.ylab = 1,
+  vjust.B.ylab = 2,
+  family = "sans",
+  expand.x = 3,
+  relative_heights = c(0.1, 0.1, 0.01, 0.15)
+)
 }
 \arguments{
-\item{data}{dataframe data}
-
-\item{time}{numeric variable. Name for following time}
-
-\item{event}{must be numeric variable. Name for event, which must be coded as 0 and 1}
+\item{fit}{cox regression results of coxph() from 'survival' package or cph() from 'rms' package}
 
 \item{heatmap.genes}{(optional) numeric variables. Name for genes}
+
+\item{new.data}{new data for validation}
 
 \item{code.0}{string. Code for event 0. Default is 'Alive'}
 
@@ -103,42 +126,44 @@ A risk score picture
 Risk Score Plot for Cox Regression
 }
 \examples{
-ggrisk(data=LIRI,time='time',event='status',
+library(rms)
+library(ggrisk)
+fit <- cph(Surv(time,status)~ANLN+CENPA+GPR182+BCO2,LIRI)
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8)
 
 \donttest{
 #more detailed example
-library(ggrisk)
 #plot
-ggrisk(data=LIRI,time='time',event='status')
+ggrisk(fit)
 
 #heatmap.genes
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        heatmap.genes=c('GPR182','CENPA','BCO2'))
 
 #cutoff
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median') #default
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='roc')
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='cutoff')
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value=-1)
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8)
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
        cutoff.label='This is cutoff')
 
 #code for 0 and 1
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -146,7 +171,7 @@ ggrisk(data=LIRI,time='time',event='status',
        code.1 = 'Already Dead')
 
 #code for high and low risk group
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -155,7 +180,7 @@ ggrisk(data=LIRI,time='time',event='status',
        code.highrisk = 'High Risk',
        code.lowrisk = 'Low Risk')
 #title
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -169,7 +194,7 @@ ggrisk(data=LIRI,time='time',event='status',
        title.B.legend='Status',
        title.C.legend='Expression')
 #size
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -195,7 +220,7 @@ ggrisk(data=LIRI,time='time',event='status',
        size.legendtitle=13,
        size.legendtext=12)
 #color
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -225,7 +250,7 @@ ggrisk(data=LIRI,time='time',event='status',
        color.C=c(low='blue',median='white',high='red'))
 
 #vjust
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
@@ -257,7 +282,7 @@ ggrisk(data=LIRI,time='time',event='status',
        vjust.B.ylab=2)
 
 #family, expand, relative height
-ggrisk(data=LIRI,time='time',event='status',
+ggrisk(fit,
        cutoff.value='median',
        cutoff.x = 145,
        cutoff.y = -0.8,
