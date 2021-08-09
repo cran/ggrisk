@@ -270,7 +270,7 @@ two_scatter <- function(fit,new.data=NULL,
                     y.per = 0.1,
                     round = 20
             )
-            fastStat::to.numeric(rs$p.adjust)=1
+            to.numeric(rs$p.adjust)=1
             cutoff.point = (rs$cut1[rs$p.adjust == min(rs$p.adjust)])
             if (length(cutoff.point)>1) cutoff.point=cutoff.point[1]
     } else if (cutoff.value == 'median') {

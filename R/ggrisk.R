@@ -297,7 +297,7 @@ ggrisk <- function(fit,heatmap.genes=NULL,new.data=NULL,
             y.per = 0.1,
             round = 20
         )
-        fastStat::to.numeric(rs$p.adjust)=1
+        to.numeric(rs$p.adjust)=1
         cutoff.point = (rs$cut1[rs$p.adjust == min(rs$p.adjust)])
         if (length(cutoff.point)>1) cutoff.point=cutoff.point[1]
     } else if (cutoff.value == 'median') {
@@ -460,7 +460,7 @@ ggrisk <- function(fit,heatmap.genes=NULL,new.data=NULL,
         data5[, i] = (data5[, i] - mean(data5[, i], na.rm = TRUE)) / sd(data5[, i], na.rm = TRUE)
     }
     data6 = cbind(id = 1:nrow(data5), data5)
-    data7 = do::reshape_toLong(data = data6,
+    data7 = reshape_toLong(data = data6,
                                var.names = colnames(data5))
     fC = ggplot(data7, aes_string(x = 'id',y = 'variable',fill = 'value')) +
         geom_raster() +
